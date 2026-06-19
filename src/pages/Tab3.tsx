@@ -18,7 +18,7 @@ const Tab3: React.FC = () => {
 
         <div className="card-container">
           <IonCard className="card">
-            <img src="https://avatars.githubusercontent.com/u/216232529?v=4"
+            <img src="https://cdn.discordapp.com/avatars/476189159351123968/archived/1375712994616410163/3017f151dc7c747b28cc77cdc9168ef8.webp?size=2048"
             alt="Avatar" 
             />
             <IonHeader>

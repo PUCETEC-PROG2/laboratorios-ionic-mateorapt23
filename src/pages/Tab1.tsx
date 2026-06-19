@@ -1,10 +1,26 @@
-import { IonContent, IonHeader, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonPage, IonThumbnail, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonHeader, IonList, IonPage, IonTitle, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import './Tab1.css';
-import { pencil, trash } from 'ionicons/icons';
-import { repositoryList } from '../Interfaces/Repository';
+import { fetchRepositories } from '../services/GithubService';
 import RepoItem from '../components/RepoItem';
+import React from 'react';
+import { Repository } from '../interfaces/Repository';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Tab1: React.FC = () => {
+  const [repositoryList, setRepositoryList] = React.useState<Repository[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  const loadRepos = async () => {
+    setLoading(true);
+    const repos = await fetchRepositories();
+    setRepositoryList(repos);
+    setLoading(false);
+  }
+
+  useIonViewWillEnter(() => {
+    loadRepos();
+  });
+
   return (
     <IonPage>
       <IonHeader>
@@ -20,36 +36,11 @@ const Tab1: React.FC = () => {
         </IonHeader>
         <IonList>
           {repositoryList.map((repo)=> (
-            <RepoItem {...repo} />
+            <RepoItem {...repo} key={repo.id}/>
           )
           )}
         </IonList>
-
-        <IonList>
-          <IonItemSliding>
-            <IonItem>
-            <IonThumbnail>
-              <img src='https://avatars.githubusercontent.com/u/216232529?v=4' alt='Repositorio 1'></img>
-            </IonThumbnail>
-            <IonLabel>
-              <h3>Repositorio 1</h3>
-              <p>Descripción del repositorio 1</p>
-              <p><strong>Lenguaje:</strong> Kotlin</p>
-            </IonLabel>
-            </IonItem>
-
-            <IonItemOptions>
-              <IonItemOption>
-                <IonIcon icon={pencil} slot="icon-only"/>               
-              </IonItemOption>
-              <IonItemOption color="danger">
-                <IonIcon icon={trash} slot="icon-only"/>               
-              </IonItemOption>
-            </IonItemOptions>
-          </IonItemSliding>
-
-        </IonList>
- 
+        {loading && <LoadingSpinner />}
       </IonContent>
     </IonPage>
   );
