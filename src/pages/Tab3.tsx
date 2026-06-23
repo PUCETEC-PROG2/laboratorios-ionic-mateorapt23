@@ -1,12 +1,31 @@
-import { IonCard, IonCardContent, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonCard, IonCardContent, IonCardSubtitle, IonCardTitle, IonContent, IonHeader, IonPage, IonText, IonTitle, IonToolbar, useIonActionSheet, useIonViewDidEnter } from '@ionic/react';
+import React, { use } from 'react';
 import './Tab3.css';
+import { GithubUser } from '../interfaces/GithubUser';
+import { fetchUserInfo } from '../services/GithubService';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Tab3: React.FC = () => {
+  const [userInfo, setUserInfo] = React.useState<GithubUser | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("");
+
+  useIonViewDidEnter(() => {
+    setLoading(true);
+    fetchUserInfo().then(user => {
+      setUserInfo(user);
+    }).catch(error => {
+      setErrorMsg("Error al cargar información del usuario: " + error);
+    }).finally(() => {
+      setLoading(false);
+    });
+  });
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Perfil</IonTitle>
+          <IonTitle>Perfil de Usuario</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -15,22 +34,21 @@ const Tab3: React.FC = () => {
             <IonTitle size="large">Perfil</IonTitle>
           </IonToolbar>
         </IonHeader>
-
-        <div className="card-container">
-          <IonCard className="card">
-            <img src="https://cdn.discordapp.com/avatars/476189159351123968/archived/1375712994616410163/3017f151dc7c747b28cc77cdc9168ef8.webp?size=2048"
-            alt="Avatar" 
-            />
-            <IonHeader>
-              <IonCardTitle>Mateo Rodríguez</IonCardTitle>
-              <IonCardSubtitle>mateorodriguez</IonCardSubtitle>
-              <IonCardContent>
-                <p>Desarrollador de software con experiencia en aplicaciones web</p>
+        <div className="card-contntainer">
+          {userInfo && (
+            <IonCard className="card">
+              <img src={userInfo.avatar_url} alt="Avatar" />
+              <IonHeader>
+                <IonCardTitle>{userInfo.name}</IonCardTitle>
+                <IonCardSubtitle>{userInfo.login}</IonCardSubtitle>
+                <IonCardContent>
+                <p>Desarrollador de software junior</p>
               </IonCardContent>
             </IonHeader>
-          </IonCard>
-        </div>  
-  
+          </IonCard>)}
+          {errorMsg && <IonText color="danger">{errorMsg}</IonText>}
+        </div>
+        {loading && <LoadingSpinner />}
       </IonContent>
     </IonPage>
   );
