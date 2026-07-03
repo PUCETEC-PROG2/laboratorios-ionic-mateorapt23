@@ -1,11 +1,29 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Repository } from "../interfaces/Repository";
 import { IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonThumbnail } from "@ionic/react";
 import { pencil, trash } from "ionicons/icons";
 
-const RepoItem: React.FC<Repository> = (repository: Repository) => {
+interface RepoItemProps {
+    repository: Repository;
+    onEdit: (repository: Repository) => void;
+    onDelete: (repository: Repository) => void;
+}
+
+const RepoItem: React.FC<RepoItemProps> = ({ repository, onEdit, onDelete }) => {
+    const slidingRef = useRef<HTMLIonItemSlidingElement>(null);
+
+    const handleEdit = () => {
+        slidingRef.current?.close();
+        onEdit(repository);
+    };
+
+    const handleDelete = () => {
+        slidingRef.current?.close();
+        onDelete(repository);
+    };
+
     return(
-      <IonItemSliding>
+      <IonItemSliding ref={slidingRef}>
         <IonItem>
           <IonThumbnail slot="start">
             <img
@@ -28,11 +46,11 @@ const RepoItem: React.FC<Repository> = (repository: Repository) => {
           </IonItem>
         
             <IonItemOptions>
-              <IonItemOption>
+              <IonItemOption onClick={handleEdit}>
                 <IonIcon icon={pencil} slot="icon-only" />
               </IonItemOption>
         
-              <IonItemOption color="danger">
+              <IonItemOption color="danger" onClick={handleDelete}>
                 <IonIcon icon={trash} slot="icon-only" />
               </IonItemOption>
             </IonItemOptions>
